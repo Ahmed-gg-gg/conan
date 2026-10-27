@@ -116,7 +116,7 @@ const cinematicScenes=[
  ["🏆🌅","Mystery solved","The four detectives have solved the case together."]
 ];
 function scene(i){return cinematicScenes[Math.max(0,Math.min(19,i))]}
-function showCinematic(i){const s=scene(i);$("cinematicArt").textContent=s[0];$("cinematicTitle").textContent=s[1];$("cinematicText").textContent=s[2];$("cinematic").classList.remove("hidden");$("cinematicContinue").onclick=()=>$("cinematic").classList.add("hidden")}
+function showCinematic(i){const s=scene(i);$("cinematicArt").textContent=s[0];$("cinematicTitle").textContent=s[1];$("cinematicText").textContent=s[2];$("cinematic").classList.remove("hidden");$("cinematicContinue").onclick=async()=>{$("cinematic").classList.add("hidden");if(!player||player.spectator||room?.status!=="playing")return;try{const {data}=await sb.from("mystery_players").select("*").eq("room_id",room.id);const players=sortedPlayers(data||[]);const active=players.length===4?players[questionIndex%4]:null;if(active?.id===player.id){const {error}=await sb.rpc("start_mystery_question_clock",{p_player_id:player.id,p_question_index:questionIndex});if(error)console.warn("Question clock was not started",error.message)}}catch(e){console.warn("Question clock was not started",e)}}}
 async function renderQuestion(){
  if(!room||!player||room.status!=="playing")return;
  const {data:r,error}=await sb.from("mystery_rooms").select("*").eq("id",room.id).single();if(error||!r)return;room=r;
