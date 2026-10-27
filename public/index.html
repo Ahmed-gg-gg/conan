@@ -66,7 +66,7 @@ async function subscribeRoom(){
  if(roomChannel)await sb.removeChannel(roomChannel);
  roomChannel=sb.channel("room-"+room.id).on("postgres_changes",{event:"*",schema:"public",table:"mystery_rooms",filter:"id=eq."+room.id},payload=>{
   const previous=room?.question_index;room=payload.new;
-  if(room.status==="playing"&&previous!==room.question_index)setTimeout(()=>syncState(),1500);else syncState();
+  if(previous!==room.question_index&&(room.status==="playing"||room.status==="finished"))setTimeout(()=>syncState(),1500);else syncState();
  }).subscribe();
  if(playersChannel)await sb.removeChannel(playersChannel);
  playersChannel=sb.channel("players-"+room.id).on("postgres_changes",{event:"*",schema:"public",table:"mystery_players",filter:"room_id=eq."+room.id},()=>renderRoster()).subscribe();
