@@ -82,7 +82,7 @@ async function renderRoster(){
  const {data:spectators}=await sb.from("mystery_spectators").select("*").eq("room_id",room.id);
  $("lobbyText").textContent=`${players.length} of 4 detectives joined · ${room.status==="playing"?"Mission started":room.status==="finished"?"Mission complete":"Waiting for the teacher to start"}`;
  $("roster").innerHTML=characters.map(c=>{const p=players.find(x=>x.character_id===c.id);return `<div class="seat"><strong>${c.emoji} ${c.name}</strong> — ${p?escapeHtml(p.display_name):"Available"}</div>`}).join("")+((spectators||[]).length?`<div class="seat">👀 ${spectators.length} spectator(s)</div>`:"");
- if(room.status==="playing"&&player){view("game");await renderQuestion()}
+ if(room.status==="playing"&&player){if($("game").classList.contains("hidden")){view("game");await renderQuestion()}}
  else if(room.status==="finished"&&player){$("finalText").textContent=player.spectator?"The mission has ended. Thanks for watching!":`Mission complete! Your score: ${score} points.`;view("finished")}
 }
 async function syncState(){
